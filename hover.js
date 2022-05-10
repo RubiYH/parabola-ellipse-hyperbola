@@ -189,10 +189,10 @@ $(document).ready(function () {
         }
         //준선
         else if (
-          (graphs[v].asym &&
-            ay / gridLineWidth == (b * (ax / gridLineWidth)) / a) ||
-          ay / gridLineWidth == -((b * (ax / gridLineWidth)) / a)
+          graphs[v].asym == true
         ) {
+			if(ay / gridLineWidth == (b * (ax / gridLineWidth)) / a ||
+          ay / gridLineWidth == -((b * (ax / gridLineWidth)) / a)) {
           $(".coord").css({
             display: "flex",
             color: graphs[v].color,
@@ -214,6 +214,7 @@ $(document).ready(function () {
           $(".coord").append(`<div id="asym"><img src=${eq} /></div>`);
           $(".coord").css({ top: e.clientY, left: e.clientX });
           return true;
+		  }
         }
       }
 
