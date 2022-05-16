@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
   <header>
-    <title>이차곡선 그리기</title>
     <link rel="stylesheet" type="text/css" href="style.css" />
     <script
       src="https://code.jquery.com/jquery-3.6.0.min.js"
@@ -9,14 +8,21 @@
       crossorigin="anonymous"
     ></script>
   </header>
-
   <body>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+      integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
     <script src="https://unpkg.com/@panzoom/panzoom@4.4.4/dist/panzoom.min.js"></script>
     <script
       type="text/javascript"
       async
       src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
     ></script>
+    <script src="https://cdn.jsdelivr.net/gh/prashantchaudhary/ddslick@master/jquery.ddslick.min.js"></script>
     <script>
       let width;
       let height;
@@ -32,7 +38,8 @@
       let scale;
       let lineWidth;
       let fontSize;
-      let id = 0;
+      let listid = 0;
+      let formatEquation;
       let drawParabola;
       let drawEllipse;
       let drawHyperbolaX;
@@ -171,6 +178,7 @@
 
         drawGrid();
 
+        //sections
         $(".h1-parabola").click(function () {
           $(".parabola").css({ display: "flex" });
           $(".ellipse").css({ display: "none" });
@@ -205,6 +213,99 @@
         gcd = gcd(number, denomin);
         return [number / gcd, denomin / gcd];
       }
+
+      formatEquation = (a, b, equation) => {
+        let eq = equation;
+        if (a == 1 * gridLineWidth) {
+          eq = eq.replace("\\frac{x^{2}}{a_2}", "{x^{2}}");
+          console.log("a");
+        }
+
+        if (b == 1 * gridLineWidth) {
+          eq = eq.replace("\\frac{y^{2}}{b_2}", "{y^{2}}");
+          console.log("b");
+        }
+
+        return eq
+          .replace("{a_2}", `{${(a / gridLineWidth) ** 2}}`)
+          .replace("{b_2}", `{${(b / gridLineWidth) ** 2}}`);
+      };
+
+      function fullscreen(e) {
+        $(`#${e}`).attr("class", "fa-solid fa-compress");
+        $(".toolbox-prt").css({
+          display: "flex",
+          top: 0,
+          position: "fixed",
+        });
+        $("#toolbox").css({
+          width: "98%",
+          "z-index": 999,
+        });
+        $(".boundary").css({
+          position: "absolute",
+          left: 0,
+          top: 0,
+          width: "100%",
+          height: "100%",
+          margin: 0,
+        });
+        $("html").css({
+          overflow: "hidden",
+        });
+      }
+
+      function exitscreen(e) {
+        $(`#${e}`).attr("class", "fa-solid fa-expand");
+        $(".boundary").removeAttr("style");
+        $("html").removeAttr("style");
+        $("#toolbox").removeAttr("style");
+        $(".toolbox-prt").removeAttr("style");
+      }
+
+      function toggleFullscreen(e) {
+        let elem = document.documentElement;
+
+        if (
+          !document.fullscreenElement &&
+          !document.mozFullScreenElement &&
+          !document.webkitFullscreenElement &&
+          !document.msFullscreenElement
+        ) {
+          if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+            fullscreen(e);
+          } else if (elem.msRequestFullscreen) {
+            elem.msRequestFullscreen();
+            fullscreen(e);
+          } else if (elem.mozRequestFullScreen) {
+            elem.mozRequestFullScreen();
+            fullscreen(e);
+          } else if (elem.webkitRequestFullscreen) {
+            elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+            fullscreen(e);
+          }
+        } else {
+          if (document.exitFullscreen) {
+            document.exitFullscreen();
+          } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+          } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+          } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+          }
+        }
+      }
+
+      //detect exiting fullscreen
+      var el = document.documentElement;
+
+      el.addEventListener("fullscreenchange", function () {
+        if (!document.fullscreenElement) {
+          exitscreen("fs");
+        }
+      });
     </script>
     <script src="parabola.js"></script>
     <script src="hover.js"></script>
@@ -290,121 +391,186 @@
       <!-- 쌍곡선 -->
       <div
         class="hyperbola"
-        style="display: none; flex-direction: row; align-items: center"
+        style="
+          display: none;
+          flex-direction: row;
+          align-items: center;
+          width: 100%;
+          justify-content: center;
+        "
       >
+        <select id="sel-hyper"></select>
+        <script>
+          var ddData = [
+            {
+              value: "x",
+              imageSrc: "x.png",
+            },
+            {
+              value: "y",
+              imageSrc: "y.png",
+            },
+          ];
+          $("#sel-hyper").ddslick({
+            data: ddData,
+            width: 100,
+            defaultSelectedIndex: 0,
+            imagePosition: "center",
+            onSelected: function (data) {
+              //console.log(data.selectedData.value);
+              var data = data.selectedData.value;
+              if (data == "x") {
+                $("#hyperx-wrapper").css({ display: "flex" });
+                $("#hypery-wrapper").css({ display: "none" });
+              } else if (data == "y") {
+                $("#hyperx-wrapper").css({ display: "none" });
+                $("#hypery-wrapper").css({ display: "flex" });
+              }
+            },
+          });
+        </script>
         <!-- 가로 -->
-        <div style="display: flex; flex-direction: column">
-          <span
-            style="
-              border-bottom: 2px solid black;
-              margin: 0 auto;
-              line-height: 2;
-            "
-          >
-            x²
+        <div
+          id="hyperx-wrapper"
+          style="
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            margin-left: 2rem;
+          "
+        >
+          <div style="display: flex; flex-direction: column">
+            <span
+              style="
+                border-bottom: 2px solid black;
+                margin: 0 auto;
+                line-height: 2;
+              "
+            >
+              x²
+            </span>
+            <span style="word-spacing: -1rem">
+              <input
+                id="ha-x"
+                style="width: 2rem; height: 2rem"
+                type="number"
+                placeholder="a"
+              />
+              <span>²</span>
+            </span>
+          </div>
+          <span>-</span>
+          <div style="display: flex; flex-direction: column">
+            <span
+              style="
+                border-bottom: 2px solid black;
+                margin: 0 auto;
+                line-height: 2;
+              "
+            >
+              y²
+            </span>
+            <span style="word-spacing: -1rem">
+              <input
+                id="hb-x"
+                style="width: 2rem; height: 2rem"
+                type="number"
+                placeholder="b"
+              />
+              <span>²</span>
+            </span>
+          </div>
+          <span style="height: 2rem; margin-right: 1rem; margin-left: 1rem">
+            = 1
           </span>
-          <span style="word-spacing: -1rem">
-            <input
-              id="ha-x"
-              style="width: 2rem; height: 2rem"
-              type="number"
-              placeholder="a"
-            />
-            <span>²</span>
-          </span>
+          <p style="margin-right: 1rem">
+            <input type="checkbox" id="x-asym" />
+            <label for="x-asym">점근선 표시</label>
+          </p>
+          <button id="h-draw-x">그리기</button>
         </div>
-        <span>-</span>
-        <div style="display: flex; flex-direction: column">
-          <span
-            style="
-              border-bottom: 2px solid black;
-              margin: 0 auto;
-              line-height: 2;
-            "
-          >
-            y²
-          </span>
-          <span style="word-spacing: -1rem">
-            <input
-              id="hb-x"
-              style="width: 2rem; height: 2rem"
-              type="number"
-              placeholder="b"
-            />
-            <span>²</span>
-          </span>
-        </div>
-        <span style="height: 2rem; margin-right: 1rem; margin-left: 1rem">
-          = 1
-        </span>
-        <p style="margin-right: 1rem">
-          <input type="checkbox" id="x-asym" />
-          <label for="x-asym">점근선 표시</label>
-        </p>
-        <button id="h-draw-x">그리기</button>
         <!-- 세로 -->
-        <div style="display: flex; flex-direction: column; margin-left: 4rem">
-          <span
-            style="
-              border-bottom: 2px solid black;
-              margin: 0 auto;
-              line-height: 2;
-            "
-          >
-            x²
+        <div
+          id="hypery-wrapper"
+          style="
+            display: none;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            margin-left: 2rem;
+          "
+        >
+          <div style="display: flex; flex-direction: column">
+            <span
+              style="
+                border-bottom: 2px solid black;
+                margin: 0 auto;
+                line-height: 2;
+              "
+            >
+              x²
+            </span>
+            <span style="word-spacing: -1rem">
+              <input
+                id="ha-y"
+                style="width: 2rem; height: 2rem"
+                type="number"
+                placeholder="a"
+              />
+              <span>²</span>
+            </span>
+          </div>
+          <span>-</span>
+          <div style="display: flex; flex-direction: column">
+            <span
+              style="
+                border-bottom: 2px solid black;
+                margin: 0 auto;
+                line-height: 2;
+              "
+            >
+              y²
+            </span>
+            <span style="word-spacing: -1rem">
+              <input
+                id="hb-y"
+                style="width: 2rem; height: 2rem"
+                type="number"
+                placeholder="b"
+              />
+              <span>²</span>
+            </span>
+          </div>
+          <span style="height: 2rem; margin-right: 1rem; margin-left: 1rem">
+            = -1
           </span>
-          <span style="word-spacing: -1rem">
-            <input
-              id="ha-y"
-              style="width: 2rem; height: 2rem"
-              type="number"
-              placeholder="a"
-            />
-            <span>²</span>
-          </span>
+          <p style="margin-right: 1rem">
+            <input type="checkbox" id="y-asym" />
+            <label for="y-asym">점근선 표시</label>
+          </p>
+          <button id="h-draw-y">그리기</button>
         </div>
-        <span>-</span>
-        <div style="display: flex; flex-direction: column">
-          <span
-            style="
-              border-bottom: 2px solid black;
-              margin: 0 auto;
-              line-height: 2;
-            "
-          >
-            y²
-          </span>
-          <span style="word-spacing: -1rem">
-            <input
-              id="hb-y"
-              style="width: 2rem; height: 2rem"
-              type="number"
-              placeholder="b"
-            />
-            <span>²</span>
-          </span>
-        </div>
-        <span style="height: 2rem; margin-right: 1rem; margin-left: 1rem">
-          = -1
-        </span>
-        <p style="margin-right: 1rem">
-          <input type="checkbox" id="y-asym" />
-          <label for="y-asym">점근선 표시</label>
-        </p>
-        <button id="h-draw-y">그리기</button>
       </div>
       <!-- 캔버스 -->
-      <div id="toolbox">
-        <div id="tools">
-          <button id="graphs_list">기록</button>
-          <div class="history"></div>
-          <button id="reset">초기화</button>
+      <div class="boundary">
+        <div class="toolbox-prt">
+          <div id="toolbox">
+            <div id="tools">
+              <button id="graphs_list">기록</button>
+              <div class="history">
+                <div class="hlist"></div>
+              </div>
+              <button id="reset">초기화</button>
+            </div>
+            <i class="fa-solid fa-expand" id="fs" title="전체 화면"></i>
+          </div>
         </div>
-      </div>
-      <div class="bg">
-        <div class="list"></div>
-        <div class="coord"></div>
-        <canvas id="canvas"></canvas>
+        <div class="bg">
+          <div class="list"></div>
+          <div class="coord"></div>
+          <canvas id="canvas"></canvas>
+        </div>
       </div>
     </div>
   </body>
