@@ -159,9 +159,11 @@ $(document).ready(function () {
     drawEllipse(a, b, f, color);
 
     // 목록
-    let equationURL = `https://latex.codecogs.com/svg.image?\\frac{x^{2}}{${
-      (a / gridLineWidth) ** 2
-    }}&plus;\\frac{y^{2}}{${(b / gridLineWidth) ** 2}}=1`;
+    let equationURL = formatEquation(
+      a,
+      b,
+      "https://latex.codecogs.com/svg.image?\\frac{x^{2}}{a_2}+\\frac{y^{2}}{b_2}=1"
+    );
     $(".list").append(
       `<div style="color: ${color.replaceAll(
         ",",
@@ -171,7 +173,7 @@ $(document).ready(function () {
     );
 
     graphs.push({
-      id: id,
+      id: listid,
       type: "ellipse",
       F: f / gridLineWidth,
       a: a / gridLineWidth,
@@ -182,6 +184,6 @@ $(document).ready(function () {
       redraw: false,
     });
     console.log(graphs);
-    id++;
+    listid++;
   });
 });
