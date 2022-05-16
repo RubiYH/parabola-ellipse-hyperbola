@@ -188,33 +188,46 @@ $(document).ready(function () {
           return true;
         }
         //준선
-        else if (
-          graphs[v].asym == true
-        ) {
-			if(ay / gridLineWidth == (b * (ax / gridLineWidth)) / a ||
-          ay / gridLineWidth == -((b * (ax / gridLineWidth)) / a)) {
-          $(".coord").css({
-            display: "flex",
-            color: graphs[v].color,
-            "flex-direction": "row",
-            "align-items": "center",
-          });
+        else if (graphs[v].asym == true) {
+          if (
+            ay / gridLineWidth == (b * (ax / gridLineWidth)) / a ||
+            ay / gridLineWidth == -((b * (ax / gridLineWidth)) / a)
+          ) {
+            $(".coord").css({
+              display: "flex",
+              color: graphs[v].color,
+              "flex-direction": "row",
+              "align-items": "center",
+            });
 
-          let eq;
-          if (ay / gridLineWidth == (b * (ax / gridLineWidth)) / a) {
-            eq = `https://latex.codecogs.com/svg.image?y=\\frac{${
-              reduce(b, a)[0]
-            }}{${reduce(b, a)[1]}}x`;
-          } else if (ay / gridLineWidth == -((b * (ax / gridLineWidth)) / a)) {
-            eq = `https://latex.codecogs.com/svg.image?y=-\\frac{${
-              reduce(b, a)[0]
-            }}{${reduce(b, a)[1]}}x`;
+            let eq;
+            let reduced = reduce(b, a);
+
+            if (ay / gridLineWidth == (b * (ax / gridLineWidth)) / a) {
+              if (reduced[0] == reduced[1]) {
+                eq = `https://latex.codecogs.com/svg.image?y=x`;
+              } else if (reduced[1] == 1) {
+                eq = `https://latex.codecogs.com/svg.image?y=${reduced[0]}x`;
+              } else {
+                eq = `https://latex.codecogs.com/svg.image?y=\\frac{${reduced[0]}}{${reduced[1]}}x`;
+              }
+            } else if (
+              ay / gridLineWidth ==
+              -((b * (ax / gridLineWidth)) / a)
+            ) {
+              if (reduced[0] == reduced[1]) {
+                eq = `https://latex.codecogs.com/svg.image?y=-x`;
+              } else if (reduced[1] == 1) {
+                eq = `https://latex.codecogs.com/svg.image?y=-${reduced[0]}x`;
+              } else {
+                eq = `https://latex.codecogs.com/svg.image?y=-\\frac{${reduced[0]}}{${reduced[1]}}x`;
+              }
+            }
+            $(".coord").text(`점근선 `);
+            $(".coord").append(`<div id="asym"><img src=${eq} /></div>`);
+            $(".coord").css({ top: e.clientY, left: e.clientX });
+            return true;
           }
-          $(".coord").text(`점근선 `);
-          $(".coord").append(`<div id="asym"><img src=${eq} /></div>`);
-          $(".coord").css({ top: e.clientY, left: e.clientX });
-          return true;
-		  }
         }
       }
 
