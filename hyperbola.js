@@ -1,5 +1,5 @@
 $(document).ready(function () {
-  //타원
+  //쌍곡선
 
   //가로로
   $("#h-draw-x").click(function () {
@@ -180,9 +180,11 @@ $(document).ready(function () {
     drawHyperbolaX(a, b, f, color);
 
     // 목록
-    let equationURL = `https://latex.codecogs.com/svg.image?\\frac{x^{2}}{${
-      (a / gridLineWidth) ** 2
-    }}-\\frac{y^{2}}{${(b / gridLineWidth) ** 2}}=1`;
+    let equationURL = formatEquation(
+      a,
+      b,
+      "https://latex.codecogs.com/svg.image?\\frac{x^{2}}{a_2}-\\frac{y^{2}}{b_2}=1"
+    );
 
     $(".list").append(
       `<div style="color: ${color.replaceAll(
@@ -193,7 +195,7 @@ $(document).ready(function () {
     );
 
     graphs.push({
-      id: id,
+      id: listid,
       type: "hyperbola",
       shape: "x",
       asym: asymOn,
@@ -206,7 +208,7 @@ $(document).ready(function () {
       redraw: false,
     });
     console.log(graphs);
-    id++;
+    listid++;
   });
 
   //세로로
@@ -387,9 +389,11 @@ $(document).ready(function () {
     drawHyperbolaY(a, b, f, color);
 
     // 목록
-    let equationURL = `https://latex.codecogs.com/svg.image?\\frac{x^{2}}{${
-      (a / gridLineWidth) ** 2
-    }}-\\frac{y^{2}}{${(b / gridLineWidth) ** 2}}=-1`;
+    let equationURL = formatEquation(
+      a,
+      b,
+      "https://latex.codecogs.com/svg.image?\\frac{x^{2}}{a_2}-\\frac{y^{2}}{b_2}=-1"
+    );
 
     $(".list").append(
       `<div style="color: ${color.replaceAll(
@@ -400,7 +404,7 @@ $(document).ready(function () {
     );
 
     graphs.push({
-      id: id,
+      id: listid,
       type: "hyperbola",
       shape: "y",
       asym: asymOn,
@@ -413,6 +417,6 @@ $(document).ready(function () {
       redraw: false,
     });
     console.log(graphs);
-    id++;
+    listid++;
   });
 });
