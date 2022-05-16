@@ -149,7 +149,7 @@ window.onload = function () {
     );
 
     graphs.push({
-      id: id,
+      id: listid,
       type: "parabola",
       F: p / gridLineWidth,
       color: color,
@@ -158,6 +158,6 @@ window.onload = function () {
       redraw: false,
     });
     console.log(graphs);
-    id++;
+    listid++;
   });
 };
