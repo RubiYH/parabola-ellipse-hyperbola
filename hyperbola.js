@@ -23,6 +23,9 @@ $(document).ready(function () {
       asymOn = true;
     }
 
+    //좌표 기록
+    let coords = [];
+
     //draw
     drawHyperbolaX = function (a, b, f, color) {
       //1사분면
@@ -175,6 +178,9 @@ $(document).ready(function () {
         ctx.stroke();
         ctx.closePath();
       }
+
+      //좌표 기록
+      coords = [points1, points2, points3, points4];
     };
 
     drawHyperbolaX(a, b, f, color);
@@ -206,6 +212,7 @@ $(document).ready(function () {
       equationURL: equationURL,
       active: true,
       redraw: false,
+      coords: [].concat(...coords),
     });
     console.log(graphs);
     listid++;
@@ -232,6 +239,7 @@ $(document).ready(function () {
     if ($("#y-asym").is(":checked")) {
       asymOn = true;
     }
+
     //draw
     drawHyperbolaY = function (a, b, f, color) {
       //1사분면
@@ -384,6 +392,9 @@ $(document).ready(function () {
         ctx.stroke();
         ctx.closePath();
       }
+
+      //좌표 기록
+      coords = [points1, points2, points3, points4];
     };
 
     drawHyperbolaY(a, b, f, color);
@@ -415,6 +426,7 @@ $(document).ready(function () {
       equationURL: equationURL,
       active: true,
       redraw: false,
+      points: [].concat(...coords),
     });
     console.log(graphs);
     listid++;
