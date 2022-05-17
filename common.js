@@ -20,6 +20,8 @@ $(document).ready(function () {
       return;
     }
 
+    hideCoordList();
+
     $(".history")
       .fadeIn(function () {
         $(this).css({ display: "block" });
@@ -29,15 +31,14 @@ $(document).ready(function () {
       '<div class="h-remove"><input id="h-sel" type="checkbox"/><button id="h-remove-confirm" disabled><i class="fa-solid fa-trash-can"></i></button></div>'
     );
     activated = true;
-    let cnt = 0;
+
     for (var i = 0; i < graphs.length; i++) {
       // if (graphs[i].redraw) continue;
       $(".hlist").append(
-        `<div class="h-item" value="${graphs[i].id}"><input type="checkbox" id="h-checkbox" value="${graphs[i].id}" /><button id="g-${graphs[i].id}"><span style="color: ${graphs[i].color}">● </span><img src=${graphs[i].equationURL} /></button></div>`
+        `<div class="h-item" value="${graphs[i].id}"><input type="checkbox" id="h-checkbox" value="${graphs[i].id}" /><button id="g-${graphs[i].id}" style="display: flex; flex-direction: row; align-items: center;"><span style="color: ${graphs[i].color}">● </span><img src=${graphs[i].equationURL} /></button></div>`
       );
-      cnt++;
     }
-    if (cnt == 0) {
+    if (graphs.length == 0) {
       $(".history").append("<p>기록이 없습니다.</p>");
       $("#h-sel").prop("disabled", true);
       $("#h-remove-confirm").prop("disabled", true);
@@ -201,5 +202,138 @@ $(document).ready(function () {
   //fullscreen
   $("#fs").click(function () {
     toggleFullscreen("fs");
+  });
+
+  //좌표 기록
+  let co_ac = false;
+  let coord_list = $(".coord_list");
+
+  function hideCoordList() {
+    coord_list.fadeOut(function () {
+      $(this).css({ display: "none" });
+      coord_list.empty();
+    });
+    coord_list.css({ width: "200px" });
+
+    co_ac = false;
+  }
+
+  $("#coord_list_btn").click(function (e) {
+    e.stopPropagation();
+
+    if (co_ac) {
+      hideCoordList();
+      return;
+    }
+
+    hideList();
+    coord_list.fadeIn().css({ display: "flex" });
+    coord_list.append("<div class='c_btns'></div><div class='c_list'></div>");
+
+    for (var i = 0; i < graphs.length; i++) {
+      $(".c_btns").append(
+        `<button id="coord-${graphs[i].id}" value="${
+          graphs[i].id
+        }" style="color: ${graphs[i].color.replaceAll(",", " ")}">● <img src="${
+          graphs[i].equationURL
+        }" /></button>`
+      );
+    }
+
+    if (graphs.length == 0) {
+      $(".c_btns").css({ "align-items": "center" });
+      $(".c_btns").append("<p>그래프가 없습니다.</p>");
+    }
+
+    co_ac = true;
+  });
+
+  //unfocus
+  $(document).click(function (e) {
+    if ($(e.target).closest(".coord_list").length != 0) return;
+    hideCoordList();
+  });
+
+  //expand & hide list
+  let expanded = false;
+
+  $(document).on("click", "button[id^='coord-']", function () {
+    if (expanded) {
+      coord_list.css({ width: "200px" });
+      $(".c_list").fadeOut(function () {
+        $(this).css({ display: "none" });
+        $(this).empty();
+        expanded = false;
+      });
+      return;
+    }
+
+    let c = $(this).val();
+    let i = graphs.findIndex((g) => g.id == c);
+    let coords = graphs[i].coords;
+
+    coord_list.css({ width: "500px" });
+    $(".c_list").fadeIn().css({ display: "flex" });
+    let cl = coords.length > 30 ? 30 : coords.length;
+
+    let cnt = 1;
+
+    expanded = true;
+
+    for (var j = 0; j < cl; j++) {
+      var x = graphs[i].coords[j].x;
+      var y = graphs[i].coords[j].y;
+      var color = graphs[i].color.replaceAll(",", " ");
+      $(".c_list").append(
+        `<span id="coordinates" data-x="${x}" data-y="${y}" data-color="${color}">(${x}, ${y})</span>`
+      );
+      console.log(j);
+
+      if (j == cl - 1) {
+        //load coordinates on scroll
+        $(".c_list").scroll(function () {
+          if (
+            this.scrollHeight - $(this).scrollTop() - $(this).outerHeight() <
+            1
+          ) {
+            // 스크롤바가 아래 쪽에 위치할 때
+            for (var j = 30 * cnt; j < 30 * (cnt + 1); j++) {
+              var x = graphs[i].coords[j].x;
+              var y = graphs[i].coords[j].y;
+              $(".c_list").append(
+                `<span id="coordinates" data-x="${x}" data-y="${y}" data-color="${color}">(${x}, ${y})$</span>`
+              );
+              console.log(j);
+            }
+            cnt++;
+          }
+        });
+      }
+    }
+  });
+
+  //hover coordinates
+
+  $(document).on("mouseover", "span[id='coordinates']", function () {
+    let x = $(this).attr("data-x");
+    let y = $(this).attr("data-y");
+    let color = $(this).attr("data-color");
+
+    $(".coord").css({
+      display: "block",
+      color: color,
+      "font-size": fontsize,
+    });
+    $(".coord").text(`(${x}, ${y})`);
+
+    var rect = c.getBoundingClientRect();
+    let desX =
+      ((Number(x) * 3) / 10 + center) * (rect.right - rect.left) +
+      rect.left * c.width;
+    let desY =
+      ((Number(y) * 3) / 10 + center) * (rect.bottom - rect.top) +
+      rect.top * c.height;
+
+    $(".coord").css({ top: desY * gridLineWidth, left: desX * gridLineWidth });
   });
 });
