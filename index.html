@@ -79,7 +79,7 @@
 
         //pan & zoom
         const panzoom = Panzoom(c, {
-          maxScale: 2.5,
+          maxScale: 3.5,
           minScale: 0.5,
           step: 0.3,
           roundPixels: true,
@@ -237,6 +237,7 @@
           display: "flex",
           top: 0,
           position: "fixed",
+          "z-index": "999",
         });
         $("#toolbox").css({
           width: "98%",
@@ -355,7 +356,7 @@
           <span style="word-spacing: -1rem">
             <input
               id="ea"
-              style="width: 2rem; height: 2rem"
+              style="width: 3rem; height: 2rem"
               type="number"
               placeholder="a"
             />
@@ -376,7 +377,7 @@
           <span style="word-spacing: -1rem">
             <input
               id="eb"
-              style="width: 2rem; height: 2rem"
+              style="width: 3rem; height: 2rem"
               type="number"
               placeholder="b"
             />
@@ -453,7 +454,7 @@
             <span style="word-spacing: -1rem">
               <input
                 id="ha-x"
-                style="width: 2rem; height: 2rem"
+                style="width: 3rem; height: 2rem"
                 type="number"
                 placeholder="a"
               />
@@ -474,7 +475,7 @@
             <span style="word-spacing: -1rem">
               <input
                 id="hb-x"
-                style="width: 2rem; height: 2rem"
+                style="width: 3rem; height: 2rem"
                 type="number"
                 placeholder="b"
               />
@@ -514,7 +515,7 @@
             <span style="word-spacing: -1rem">
               <input
                 id="ha-y"
-                style="width: 2rem; height: 2rem"
+                style="width: 3rem; height: 2rem"
                 type="number"
                 placeholder="a"
               />
@@ -535,7 +536,7 @@
             <span style="word-spacing: -1rem">
               <input
                 id="hb-y"
-                style="width: 2rem; height: 2rem"
+                style="width: 3rem; height: 2rem"
                 type="number"
                 placeholder="b"
               />
@@ -557,15 +558,17 @@
         <div class="toolbox-prt">
           <div id="toolbox">
             <div id="tools">
-              <button id="graphs_list">기록</button>
+              <button id="graphs_list">그래프 기록</button>
               <div class="history">
                 <div class="hlist"></div>
               </div>
               <button id="reset">초기화</button>
+              <button id="coord_list_btn">좌표 기록</button>
             </div>
             <i class="fa-solid fa-expand" id="fs" title="전체 화면"></i>
           </div>
         </div>
+        <div class="coord_list"></div>
         <div class="bg">
           <div class="list"></div>
           <div class="coord"></div>
