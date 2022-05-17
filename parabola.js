@@ -9,6 +9,9 @@ window.onload = function () {
     let f = Number($("#p-F").val() * 4 * gridLineWidth);
     let p = f / 4; // 초점
 
+    //좌표 기록
+    let coords = [];
+
     //draw
     drawParabola = function (f, p, color) {
       if (f / gridLineWidth > 0) {
@@ -65,6 +68,9 @@ window.onload = function () {
         ctx.stroke();
         ctx.fill();
         ctx.closePath();
+
+        //좌표 기록
+        coords = [pointsPY, pointsNY];
       } else if (f / gridLineWidth < 0) {
         const pointsPY = [];
         for (var i = 0; i < lwidth; i++) {
@@ -119,6 +125,9 @@ window.onload = function () {
         ctx.stroke();
         ctx.fill();
         ctx.closePath();
+
+        //좌표 기록
+        coords = [pointsPY, pointsNY];
       }
 
       //준선
@@ -156,6 +165,7 @@ window.onload = function () {
       equationURL: equationURL,
       active: true,
       redraw: false,
+      coords: [].concat(...coords),
     });
     console.log(graphs);
     listid++;
