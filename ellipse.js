@@ -13,6 +13,9 @@ $(document).ready(function () {
     let b = Number($("#eb").val()) * gridLineWidth;
     let f = a > b ? Math.sqrt(a ** 2 - b ** 2) : Math.sqrt(b ** 2 - a ** 2); //초점
 
+    //좌표 기록
+    let coords = [];
+
     //draw
     drawEllipse = function (a, b, f, color) {
       //1사분면
@@ -154,6 +157,9 @@ $(document).ready(function () {
         ctx.fill();
         ctx.closePath();
       }
+
+      //좌표 기록
+      coords = [points1, points2, points3, points4];
     };
 
     drawEllipse(a, b, f, color);
@@ -182,6 +188,7 @@ $(document).ready(function () {
       equationURL: equationURL,
       active: true,
       redraw: false,
+      coords: [].concat(...coords),
     });
     console.log(graphs);
     listid++;
