@@ -24,7 +24,7 @@ $(document).ready(function () {
 
   //마우스 호버
   $("#canvas").mousemove(function (e) {
-    let sensitivity = 15; //반경
+    let sensitivity = 10; //반경
 
     for (const v in graphs) {
       console.log(graphs[v]);
