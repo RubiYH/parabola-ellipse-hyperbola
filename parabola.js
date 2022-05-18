@@ -18,9 +18,10 @@ window.onload = function () {
         // y값 양수
         const pointsPY = [];
 
-        for (var a = 0; a < lwidth; a++) {
-          let Plus_b = Math.sqrt(2 * Math.abs(a) * Math.abs(p) + 2 * a * p);
-          pointsPY.push({ x: a, y: Plus_b });
+        for (var i = 0; i < lwidth; i++) {
+          let x = i;
+          let y = Math.sqrt(2 * Math.abs(x) * Math.abs(p) + 2 * x * p);
+          pointsPY.push({ x: x, y: y });
         }
 
         ctx.beginPath();
@@ -41,9 +42,10 @@ window.onload = function () {
         //y값 음수
         const pointsNY = [];
 
-        for (var a = 0; a < lwidth; a++) {
-          let Plus_b = -Math.sqrt(2 * Math.abs(a) * Math.abs(p) + 2 * a * p);
-          pointsNY.push({ x: a, y: Plus_b });
+        for (var i = 0; i < lwidth; i++) {
+          let x = i;
+          let y = -Math.sqrt(2 * Math.abs(x) * Math.abs(p) + 2 * x * p);
+          pointsNY.push({ x: x, y: y });
         }
 
         ctx.beginPath();
@@ -74,9 +76,9 @@ window.onload = function () {
       } else if (f / gridLineWidth < 0) {
         const pointsPY = [];
         for (var i = 0; i < lwidth; i++) {
-          let x = -i;
-          let y = Math.sqrt(f * x);
-          pointsPY.push({ x: x, y: y });
+          let x = i;
+          let y = Math.sqrt(2 * Math.abs(x) * Math.abs(p) - 2 * x * p);
+          pointsPY.push({ x: -x, y: y });
         }
 
         ctx.beginPath();
@@ -96,9 +98,9 @@ window.onload = function () {
 
         const pointsNY = [];
         for (var i = 0; i < lwidth; i++) {
-          let x = -i;
-          let y = -Math.sqrt(f * x);
-          pointsNY.push({ x: x, y: y });
+          let x = i;
+          let y = -Math.sqrt(2 * Math.abs(x) * Math.abs(p) - 2 * x * p);
+          pointsNY.push({ x: -x, y: y });
         }
 
         ctx.beginPath();
