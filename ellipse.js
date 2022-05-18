@@ -22,7 +22,11 @@ $(document).ready(function () {
       const points1 = [];
       for (var i = 0; i <= a; i++) {
         let x = i;
-        let y = -Math.sqrt(a ** 2 * b ** 2 - b ** 2 * x ** 2) / a;
+
+        let c = Math.sqrt(a ** 2 - b ** 2);
+        let e = c / a;
+
+        let y = -Math.sqrt(-((x - c) ** 2) + (a - e * x) ** 2);
         points1.push({ x: x, y: y });
       }
 
@@ -46,7 +50,10 @@ $(document).ready(function () {
       const points2 = [];
       for (var i = 0; i <= a; i++) {
         let x = -i;
-        let y = -Math.sqrt(a ** 2 * b ** 2 - b ** 2 * x ** 2) / a;
+        let c = Math.sqrt(a ** 2 - b ** 2);
+        let e = c / a;
+
+        let y = -Math.sqrt(-((x - c) ** 2) + (a - e * x) ** 2);
         points2.push({ x: x, y: y });
       }
 
@@ -70,7 +77,10 @@ $(document).ready(function () {
       const points3 = [];
       for (var i = 0; i <= a; i++) {
         let x = -i;
-        let y = Math.sqrt(a ** 2 * b ** 2 - b ** 2 * x ** 2) / a;
+        let c = Math.sqrt(a ** 2 - b ** 2);
+        let e = c / a;
+
+        let y = Math.sqrt(-((x - c) ** 2) + (a - e * x) ** 2);
         points3.push({ x: x, y: y });
       }
 
@@ -94,7 +104,10 @@ $(document).ready(function () {
       const points4 = [];
       for (var i = 0; i <= a; i++) {
         let x = i;
-        let y = Math.sqrt(a ** 2 * b ** 2 - b ** 2 * x ** 2) / a;
+        let c = Math.sqrt(a ** 2 - b ** 2);
+        let e = c / a;
+
+        let y = Math.sqrt(-((x - c) ** 2) + (a - e * x) ** 2);
         points4.push({ x: x, y: y });
       }
 
