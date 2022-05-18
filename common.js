@@ -260,7 +260,7 @@ $(document).ready(function () {
   $(document).on("click", "button[id^='coord-']", function () {
     if (expanded) {
       coord_list.css({ width: "200px" });
-      $(".c_list").fadeOut(function () {
+      $(".c_list").fadeOut("fast", function () {
         $(this).css({ display: "none" });
         $(this).empty();
         expanded = false;
@@ -281,8 +281,8 @@ $(document).ready(function () {
     expanded = true;
 
     for (var j = 0; j < cl; j++) {
-      var x = graphs[i].coords[j].x;
-      var y = graphs[i].coords[j].y;
+      var x = graphs[i].coords[j].x / gridLineWidth;
+      var y = graphs[i].coords[j].y / gridLineWidth;
       var color = graphs[i].color.replaceAll(",", " ");
       $(".c_list").append(
         `<span id="coordinates" data-x="${x}" data-y="${y}" data-color="${color}">(${x}, ${y})</span>`
@@ -298,10 +298,10 @@ $(document).ready(function () {
           ) {
             // 스크롤바가 아래 쪽에 위치할 때
             for (var j = 30 * cnt; j < 30 * (cnt + 1); j++) {
-              var x = graphs[i].coords[j].x;
-              var y = graphs[i].coords[j].y;
+              var x = graphs[i].coords[j].x / gridLineWidth;
+              var y = graphs[i].coords[j].y / gridLineWidth;
               $(".c_list").append(
-                `<span id="coordinates" data-x="${x}" data-y="${y}" data-color="${color}">(${x}, ${y})$</span>`
+                `<span id="coordinates" data-x="${x}" data-y="${y}" data-color="${color}">(${x}, ${y})</span>`
               );
               console.log(j);
             }
@@ -328,12 +328,28 @@ $(document).ready(function () {
 
     var rect = c.getBoundingClientRect();
     let desX =
-      ((Number(x) * 3) / 10 + center) * (rect.right - rect.left) +
-      rect.left * c.width;
+      (((3 * Number(x)) / 10 + center) * (rect.right - rect.left)) / width +
+      rect.left;
     let desY =
-      ((Number(y) * 3) / 10 + center) * (rect.bottom - rect.top) +
-      rect.top * c.height;
+      (((3 * Number(y)) / 10 + hcenter) * (rect.bottom - rect.top)) / width +
+      rect.top;
 
-    $(".coord").css({ top: desY * gridLineWidth, left: desX * gridLineWidth });
+    let converted_desX = parseInt(
+      ((((desX * gridLineWidth - rect.left) / (rect.right - rect.left)) *
+        canvas.width -
+        center) *
+        10) /
+        3
+    );
+
+    let converted_desY = -parseInt(
+      ((((desY * gridLineWidth - rect.top) / (rect.bottom - rect.top)) *
+        canvas.height -
+        hcenter) *
+        10) /
+        3
+    );
+
+    $(".coord").css({ top: converted_desY, left: converted_desX });
   });
 });
