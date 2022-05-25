@@ -14,19 +14,29 @@ $(document).ready(function () {
     let f = a > b ? Math.sqrt(a ** 2 - b ** 2) : Math.sqrt(b ** 2 - a ** 2); //초점
 
     //좌표 기록
+    let coords23 = [];
+    let coords14 = [];
     let coords = [];
 
     //draw
     drawEllipse = function (a, b, f, color) {
+      let x_range = a; //x 범위
+
       //1사분면
       const points1 = [];
-      for (var i = 0; i <= a; i++) {
+      for (var i = 0; i <= x_range; i++) {
         let x = i;
+        let y;
 
-        let c = Math.sqrt(a ** 2 - b ** 2);
-        let e = c / a;
-
-        let y = -Math.sqrt(-((x - c) ** 2) + (a - e * x) ** 2);
+        if (a >= b) {
+          let c = Math.sqrt(a ** 2 - b ** 2);
+          let e = c / a;
+          y = -Math.sqrt(-((x - c) ** 2) + (a - e * x) ** 2);
+        } else {
+          let c = Math.sqrt(b ** 2 - a ** 2);
+          let e = c / b;
+          y = -(Math.sqrt(a ** 2 - x ** 2) / Math.sqrt(1 - e ** 2));
+        }
         points1.push({ x: x, y: y });
       }
 
@@ -48,12 +58,19 @@ $(document).ready(function () {
 
       //2사분면
       const points2 = [];
-      for (var i = 0; i <= a; i++) {
+      for (var i = 0; i <= x_range; i++) {
         let x = -i;
-        let c = Math.sqrt(a ** 2 - b ** 2);
-        let e = c / a;
+        let y;
 
-        let y = -Math.sqrt(-((x - c) ** 2) + (a - e * x) ** 2);
+        if (a >= b) {
+          let c = Math.sqrt(a ** 2 - b ** 2);
+          let e = c / a;
+          y = -Math.sqrt(-((x - c) ** 2) + (a - e * x) ** 2);
+        } else {
+          let c = Math.sqrt(b ** 2 - a ** 2);
+          let e = c / b;
+          y = -(Math.sqrt(a ** 2 - x ** 2) / Math.sqrt(1 - e ** 2));
+        }
         points2.push({ x: x, y: y });
       }
 
@@ -75,12 +92,19 @@ $(document).ready(function () {
 
       //3사분면
       const points3 = [];
-      for (var i = 0; i <= a; i++) {
+      for (var i = 0; i <= x_range; i++) {
         let x = -i;
-        let c = Math.sqrt(a ** 2 - b ** 2);
-        let e = c / a;
+        let y;
 
-        let y = Math.sqrt(-((x - c) ** 2) + (a - e * x) ** 2);
+        if (a >= b) {
+          let c = Math.sqrt(a ** 2 - b ** 2);
+          let e = c / a;
+          y = Math.sqrt(-((x - c) ** 2) + (a - e * x) ** 2);
+        } else {
+          let c = Math.sqrt(b ** 2 - a ** 2);
+          let e = c / b;
+          y = Math.sqrt(a ** 2 - x ** 2) / Math.sqrt(1 - e ** 2);
+        }
         points3.push({ x: x, y: y });
       }
 
@@ -102,12 +126,20 @@ $(document).ready(function () {
 
       //4사분면
       const points4 = [];
-      for (var i = 0; i <= a; i++) {
+      for (var i = 0; i <= x_range; i++) {
         let x = i;
-        let c = Math.sqrt(a ** 2 - b ** 2);
-        let e = c / a;
+        let y;
 
-        let y = Math.sqrt(-((x - c) ** 2) + (a - e * x) ** 2);
+        if (a >= b) {
+          let c = Math.sqrt(a ** 2 - b ** 2);
+          let e = c / a;
+          y = Math.sqrt(-((x - c) ** 2) + (a - e * x) ** 2);
+        } else {
+          let c = Math.sqrt(b ** 2 - a ** 2);
+          let e = c / b;
+          y = Math.sqrt(a ** 2 - x ** 2) / Math.sqrt(1 - e ** 2);
+        }
+
         points4.push({ x: x, y: y });
       }
 
@@ -172,7 +204,9 @@ $(document).ready(function () {
       }
 
       //좌표 기록
-      coords = [points1, points2, points3, points4];
+      coords23 = [[].concat(...points2), [].concat(...points3)];
+      coords14 = [[].concat(...points1), [].concat(...points4)];
+      coords = [].concat(...points1, ...points2, ...points3, ...points4);
     };
 
     drawEllipse(a, b, f, color);
@@ -201,7 +235,9 @@ $(document).ready(function () {
       equationURL: equationURL,
       active: true,
       redraw: false,
-      coords: [].concat(...coords),
+      coords: coords,
+      coords23: coords23,
+      coords14: coords14,
     });
     console.log(graphs);
     listid++;
