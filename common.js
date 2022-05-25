@@ -212,10 +212,11 @@ $(document).ready(function () {
     coord_list.fadeOut(function () {
       $(this).css({ display: "none" });
       coord_list.empty();
-    });
-    coord_list.css({ width: "200px" });
+      coord_list.css({ width: "200px" });
 
-    co_ac = false;
+      co_ac = false;
+      expanded = false;
+    });
   }
 
   $("#coord_list_btn").click(function (e) {
@@ -250,7 +251,11 @@ $(document).ready(function () {
 
   //unfocus
   $(document).click(function (e) {
-    if ($(e.target).closest(".coord_list").length != 0) return;
+    if (
+      $(e.target).closest(".bg").length != 0 ||
+      $(e.target).closest(".coord_list").length != 0
+    )
+      return;
     hideCoordList();
   });
 
@@ -259,97 +264,270 @@ $(document).ready(function () {
 
   $(document).on("click", "button[id^='coord-']", function () {
     if (expanded) {
-      coord_list.css({ width: "200px" });
       $(".c_list").fadeOut("fast", function () {
         $(this).css({ display: "none" });
         $(this).empty();
         expanded = false;
       });
+      coord_list.css({ width: "200px" });
       return;
     }
 
     let c = $(this).val();
     let i = graphs.findIndex((g) => g.id == c);
-    let coords = graphs[i].coords;
+    // let coords = graphs[i].coords;
 
-    coord_list.css({ width: "500px" });
+    coord_list.css({ width: "600px" });
     $(".c_list").fadeIn().css({ display: "flex" });
-    let cl = coords.length > 30 ? 30 : coords.length;
 
-    let cnt = 1;
+    //range selector
+    $(".c_list").append(
+      `<div class='coords_menu'><input type='checkbox' class='c_selector' id='positiveX' value='${c}' /><label for='positiveX'>+x</label><input type='checkbox' class='c_selector' id='negativeX' value='${c}'/><label for='negativeX'>-x</label></div>`
+    );
 
     expanded = true;
-
-    for (var j = 0; j < cl; j++) {
-      var x = graphs[i].coords[j].x / gridLineWidth;
-      var y = graphs[i].coords[j].y / gridLineWidth;
-      var color = graphs[i].color.replaceAll(",", " ");
-      $(".c_list").append(
-        `<span id="coordinates" data-x="${x}" data-y="${y}" data-color="${color}">(${x}, ${y})</span>`
-      );
-      console.log(j);
-
-      if (j == cl - 1) {
-        //load coordinates on scroll
-        $(".c_list").scroll(function () {
-          if (
-            this.scrollHeight - $(this).scrollTop() - $(this).outerHeight() <
-            1
-          ) {
-            // 스크롤바가 아래 쪽에 위치할 때
-            for (var j = 30 * cnt; j < 30 * (cnt + 1); j++) {
-              var x = graphs[i].coords[j].x / gridLineWidth;
-              var y = graphs[i].coords[j].y / gridLineWidth;
-              $(".c_list").append(
-                `<span id="coordinates" data-x="${x}" data-y="${y}" data-color="${color}">(${x}, ${y})</span>`
-              );
-              console.log(j);
-            }
-            cnt++;
-          }
-        });
-      }
-    }
   });
 
-  //hover coordinates
+  //range selector
+  $(document).on("change", "input[class='c_selector']", function () {
+    let c = $(this).val();
+    let i = graphs.findIndex((g) => g.id == c);
 
-  $(document).on("mouseover", "span[id='coordinates']", function () {
-    let x = $(this).attr("data-x");
-    let y = $(this).attr("data-y");
-    let color = $(this).attr("data-color");
+    //1사분면
+    var One = graphs[i].coords14[0];
+    //2사분면
+    var Two = graphs[i].coords23[0];
+    //3사분면
+    var Three = graphs[i].coords23[1];
+    //4사분면
+    var Four = graphs[i].coords14[1];
 
-    $(".coord").css({
-      display: "block",
-      color: color,
-      "font-size": fontsize,
-    });
-    $(".coord").text(`(${x}, ${y})`);
+    //양수 좌표
+    let PositiveCoords = [];
+    for (var k = 0; k < One.length; k++) {
+      PositiveCoords.push({
+        x: One[k].x,
+        y: { n: One[k].y, p: Four[k].y },
+      });
+    }
 
-    var rect = c.getBoundingClientRect();
-    let desX =
-      (((3 * Number(x)) / 10 + center) * (rect.right - rect.left)) / width +
-      rect.left;
-    let desY =
-      (((3 * Number(y)) / 10 + hcenter) * (rect.bottom - rect.top)) / width +
-      rect.top;
+    //음수 좌표
+    let NegativeCoords = [];
+    for (var k = 0; k < Two.length; k++) {
+      NegativeCoords.push({
+        x: Two[k].x,
+        y: { n: Two[k].y, p: Three[k].y },
+      });
+    }
 
-    let converted_desX = parseInt(
-      ((((desX * gridLineWidth - rect.left) / (rect.right - rect.left)) *
-        canvas.width -
-        center) *
-        10) /
-        3
-    );
+    if ($("#positiveX").is(":checked") && $("#negativeX").is(":checked")) {
+      $(".c_list").children().not(".coords_menu").remove();
+      //전체 좌표
+      let FullCoords = [].concat(
+        ...NegativeCoords.reverse(),
+        ...PositiveCoords
+      );
 
-    let converted_desY = -parseInt(
-      ((((desY * gridLineWidth - rect.top) / (rect.bottom - rect.top)) *
-        canvas.height -
-        hcenter) *
-        10) /
-        3
-    );
+      let cl = FullCoords.length < 30 ? FullCoords.length : 30;
 
-    $(".coord").css({ top: converted_desY, left: converted_desX });
+      let cnt = 1;
+
+      for (var q = 0; q < cl; q++) {
+        let x = FullCoords[q].x / gridLineWidth;
+        let Py = FullCoords[q].y.p / gridLineWidth;
+        let Ny = FullCoords[q].y.n / gridLineWidth;
+        let isDecimal = x % 1 == 0 ? false : true;
+
+        if (Py == Ny) {
+          $(".c_list").append(
+            `<span id="coordinates" data-isDecimal="${isDecimal}">(${x}, ${Py.toFixed(
+              6
+            )})</span>`
+          );
+        } else {
+          $(".c_list").append(
+            `<span id="coordinates" data-isDecimal="${isDecimal}">(${x}, ${Py.toFixed(
+              6
+            )}), (${x}, ${Ny.toFixed(6)})</span>`
+          );
+        }
+
+        if (q == cl - 1) {
+          //load more coordinates on scroll
+          $(".c_list").off("scroll");
+          $(".c_list").scroll(function () {
+            if (
+              $(this).prop("scrollHeight") -
+                $(this).scrollTop() -
+                $(this).outerHeight() <
+              2
+            ) {
+              // 스크롤바가 아래 쪽에 위치할 때
+              for (var j = 30 * cnt; j < 30 * (cnt + 1); j++) {
+                if (!FullCoords[j]) {
+                  console.log("end of coordinates");
+                  break;
+                }
+                let x = FullCoords[j].x / gridLineWidth;
+                let Py = FullCoords[j].y.p / gridLineWidth;
+                let Ny = FullCoords[j].y.n / gridLineWidth;
+                let isDecimal = x % 1 == 0 ? false : true;
+
+                if (Py == Ny) {
+                  $(".c_list").append(
+                    `<span id="coordinates" data-isDecimal="${isDecimal}">(${x}, ${Py.toFixed(
+                      6
+                    )})</span>`
+                  );
+                } else {
+                  $(".c_list").append(
+                    `<span id="coordinates" data-isDecimal="${isDecimal}">(${x}, ${Py.toFixed(
+                      6
+                    )}), (${x}, ${Ny.toFixed(6)})</span>`
+                  );
+                }
+                console.log(j);
+              }
+              cnt++;
+            }
+          });
+        }
+      }
+    } else if ($("#positiveX").is(":checked")) {
+      $(".c_list").children().not(".coords_menu").remove();
+      let cl = PositiveCoords.length < 30 ? PositiveCoords.length : 30;
+
+      let cnt = 1;
+
+      for (var q = 0; q < cl; q++) {
+        let x = PositiveCoords[q].x / gridLineWidth;
+        let Py = PositiveCoords[q].y.p / gridLineWidth;
+        let Ny = PositiveCoords[q].y.n / gridLineWidth;
+        let isDecimal = x % 1 == 0 ? false : true;
+
+        if (Py == Ny) {
+          $(".c_list").append(
+            `<span id="coordinates" data-isDecimal="${isDecimal}">(${x}, ${Py.toFixed(
+              6
+            )})</span>`
+          );
+        } else {
+          $(".c_list").append(
+            `<span id="coordinates" data-isDecimal="${isDecimal}">(${x}, ${Py.toFixed(
+              6
+            )}), (${x}, ${Ny.toFixed(6)})</span>`
+          );
+        }
+
+        if (q == cl - 1) {
+          $(".c_list").off("scroll");
+
+          //load more coordinates on scroll
+          $(".c_list").scroll(function () {
+            if (
+              $(this).prop("scrollHeight") -
+                $(this).scrollTop() -
+                $(this).outerHeight() <
+              2
+            ) {
+              // 스크롤바가 아래 쪽에 위치할 때
+              for (var j = 30 * cnt; j < 30 * (cnt + 1); j++) {
+                if (!PositiveCoords[j]) {
+                  console.log("end of coordinates");
+                  break;
+                }
+                let x = PositiveCoords[j].x / gridLineWidth;
+                let Py = PositiveCoords[j].y.p / gridLineWidth;
+                let Ny = PositiveCoords[j].y.n / gridLineWidth;
+                let isDecimal = x % 1 == 0 ? false : true;
+
+                if (Py == Ny) {
+                  $(".c_list").append(
+                    `<span id="coordinates" data-isDecimal="${isDecimal}">(${x}, ${Py.toFixed(
+                      6
+                    )})</span>`
+                  );
+                } else {
+                  $(".c_list").append(
+                    `<span id="coordinates" data-isDecimal="${isDecimal}">(${x}, ${Py.toFixed(
+                      6
+                    )}), (${x}, ${Ny.toFixed(6)})</span>`
+                  );
+                }
+                console.log(j);
+              }
+              cnt++;
+            }
+          });
+        }
+      }
+    } else if ($("#negativeX").is(":checked")) {
+      $(".c_list").children().not(".coords_menu").remove();
+      let cl = NegativeCoords.length < 30 ? NegativeCoords.length : 30;
+
+      let cnt = 1;
+
+      for (var q = 0; q < cl; q++) {
+        let x = NegativeCoords[q].x / gridLineWidth;
+        let Py = NegativeCoords[q].y.p / gridLineWidth;
+        let Ny = NegativeCoords[q].y.n / gridLineWidth;
+        let isDecimal = x % 1 == 0 ? false : true;
+
+        if (Py == Ny) {
+          $(".c_list").append(
+            `<span id="coordinates" data-isDecimal="${isDecimal}" >(${x}, ${Py.toFixed(
+              6
+            )})</span>`
+          );
+        } else {
+          $(".c_list").append(
+            `<span id="coordinates" data-isDecimal="${isDecimal}">(${x}, ${Py.toFixed(
+              6
+            )}), (${x}, ${Ny.toFixed(6)})</span>`
+          );
+        }
+
+        if (q == cl - 1) {
+          $(".c_list").off("scroll");
+
+          //load more coordinates on scroll
+          $(".c_list").scroll(function () {
+            if (
+              $(this).prop("scrollHeight") -
+                $(this).scrollTop() -
+                $(this).outerHeight() <
+              2
+            ) {
+              // 스크롤바가 아래 쪽에 위치할 때
+              for (var j = 30 * cnt; j < 30 * (cnt + 1); j++) {
+                if (!NegativeCoords[j]) {
+                  console.log("end of coordinates");
+                  break;
+                }
+                let x = NegativeCoords[j].x / gridLineWidth;
+                let Py = NegativeCoords[j].y.p / gridLineWidth;
+                let Ny = NegativeCoords[j].y.n / gridLineWidth;
+
+                if (Py == Ny) {
+                  $(".c_list").append(
+                    `<span id="coordinates">(${x}, ${Py.toFixed(6)})</span>`
+                  );
+                } else {
+                  $(".c_list").append(
+                    `<span id="coordinates">(${x}, ${Py.toFixed(
+                      6
+                    )}), (${x}, ${Ny.toFixed(6)})</span>`
+                  );
+                }
+                console.log(j);
+              }
+              cnt++;
+            }
+          });
+        }
+      }
+    } else {
+      $(".c_list").children().not(".coords_menu").remove();
+    }
   });
 });
