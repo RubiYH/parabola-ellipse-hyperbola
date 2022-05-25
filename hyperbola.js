@@ -24,7 +24,9 @@ $(document).ready(function () {
     }
 
     //좌표 기록
-    let coords = [];
+    let coords23;
+    let coords14;
+    let coords;
 
     //draw
     drawHyperbolaX = function (a, b, f, color) {
@@ -32,7 +34,11 @@ $(document).ready(function () {
       const points1 = [];
       for (var i = a; i < lwidth; i++) {
         let x = i;
-        let y = -Math.sqrt(((b * x) / a) ** 2 - b ** 2);
+        let y;
+
+        let c = Math.sqrt(a ** 2 + b ** 2);
+        let e = c / a;
+        y = -Math.sqrt(-((x - c) ** 2) + (a - e * x) ** 2);
 
         points1.push({ x: x, y: y });
       }
@@ -57,7 +63,11 @@ $(document).ready(function () {
       const points2 = [];
       for (var i = a; i < lwidth; i++) {
         let x = -i;
-        let y = -Math.sqrt(((b * x) / a) ** 2 - b ** 2);
+        let y;
+
+        let c = Math.sqrt(a ** 2 + b ** 2);
+        let e = c / a;
+        y = -Math.sqrt(-((x - c) ** 2) + (a - e * x) ** 2);
 
         points2.push({ x: x, y: y });
       }
@@ -82,7 +92,11 @@ $(document).ready(function () {
       const points3 = [];
       for (var i = a; i < lwidth; i++) {
         let x = -i;
-        let y = Math.sqrt(((b * x) / a) ** 2 - b ** 2);
+        let y;
+
+        let c = Math.sqrt(a ** 2 + b ** 2);
+        let e = c / a;
+        y = Math.sqrt(-((x - c) ** 2) + (a - e * x) ** 2);
 
         points3.push({ x: x, y: y });
       }
@@ -107,7 +121,11 @@ $(document).ready(function () {
       const points4 = [];
       for (var i = a; i < lwidth; i++) {
         let x = i;
-        let y = Math.sqrt(((b * x) / a) ** 2 - b ** 2);
+        let y;
+
+        let c = Math.sqrt(a ** 2 + b ** 2);
+        let e = c / a;
+        y = Math.sqrt(-((x - c) ** 2) + (a - e * x) ** 2);
 
         points4.push({ x: x, y: y });
       }
@@ -181,6 +199,8 @@ $(document).ready(function () {
 
       //좌표 기록
       coords = [points1, points2, points3, points4];
+      coords23 = [[].concat(...points2), [].concat(...points3)];
+      coords14 = [[].concat(...points1), [].concat(...points4)];
     };
 
     drawHyperbolaX(a, b, f, color);
@@ -213,6 +233,8 @@ $(document).ready(function () {
       active: true,
       redraw: false,
       coords: [].concat(...coords),
+      coords23: coords23,
+      coords14: coords14,
     });
     console.log(graphs);
     listid++;
@@ -240,13 +262,21 @@ $(document).ready(function () {
       asymOn = true;
     }
 
+    let coords23;
+    let coords14;
+    let coords;
+
     //draw
     drawHyperbolaY = function (a, b, f, color) {
       //1사분면
       const points1 = [];
       for (var i = 0; i < lheight; i++) {
         let x = i;
-        let y = -Math.sqrt(((b * x) / a) ** 2 + b ** 2);
+        let y;
+
+        let c = Math.sqrt(a ** 2 + b ** 2);
+        let e = c / b;
+        y = -Math.sqrt(-(a ** 2 + x ** 2) / (1 - e ** 2));
 
         points1.push({ x: x, y: y });
       }
@@ -271,7 +301,11 @@ $(document).ready(function () {
       const points2 = [];
       for (var i = 0; i < lheight; i++) {
         let x = -i;
-        let y = -Math.sqrt(((b * x) / a) ** 2 + b ** 2);
+        let y;
+
+        let c = Math.sqrt(a ** 2 + b ** 2);
+        let e = c / b;
+        y = -Math.sqrt(-(a ** 2 + x ** 2) / (1 - e ** 2));
 
         points2.push({ x: x, y: y });
       }
@@ -296,7 +330,11 @@ $(document).ready(function () {
       const points3 = [];
       for (var i = 0; i < lheight; i++) {
         let x = -i;
-        let y = Math.sqrt(((b * x) / a) ** 2 + b ** 2);
+        let y;
+
+        let c = Math.sqrt(a ** 2 + b ** 2);
+        let e = c / b;
+        y = Math.sqrt(-(a ** 2 + x ** 2) / (1 - e ** 2));
 
         points3.push({ x: x, y: y });
       }
@@ -321,7 +359,11 @@ $(document).ready(function () {
       const points4 = [];
       for (var i = 0; i < lheight; i++) {
         let x = i;
-        let y = Math.sqrt(((b * x) / a) ** 2 + b ** 2);
+        let y;
+
+        let c = Math.sqrt(a ** 2 + b ** 2);
+        let e = c / b;
+        y = Math.sqrt(-(a ** 2 + x ** 2) / (1 - e ** 2));
 
         points4.push({ x: x, y: y });
       }
@@ -394,7 +436,9 @@ $(document).ready(function () {
       }
 
       //좌표 기록
-      coords = [points1, points2, points3, points4];
+      coords23 = [[].concat(...points2), [].concat(...points3)];
+      coords14 = [[].concat(...points1), [].concat(...points4)];
+      coords = [].concat(...points1, ...points2, ...points3, ...points4);
     };
 
     drawHyperbolaY(a, b, f, color);
@@ -426,7 +470,9 @@ $(document).ready(function () {
       equationURL: equationURL,
       active: true,
       redraw: false,
-      points: [].concat(...coords),
+      coords: coords,
+      coords23: coords23,
+      coords14: coords14,
     });
     console.log(graphs);
     listid++;
