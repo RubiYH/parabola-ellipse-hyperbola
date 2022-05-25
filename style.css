@@ -288,18 +288,27 @@ img {
   width: 120px;
 }
 
+.coords_menu {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  flex-direction: row;
+  font-size: 1rem;
+}
+
 .c_list {
   display: none;
   flex-direction: column;
   flex-wrap: nowrap;
   align-items: stretch;
   position: absolute;
-  right: 0;
+  right: -4rem;
   overflow-y: auto;
-  overflow-x: hidden;
+  overflow-x: auto;
   font-size: 1rem;
   height: 100%;
-  width: 16rem;
+  width: 28rem;
   height: -webkit-fill-available;
   background: #eeeeee;
   z-index: -2;
