@@ -10,6 +10,8 @@ window.onload = function () {
     let p = f / 4; // 초점
 
     //좌표 기록
+    let coords14;
+    let coords23;
     let coords = [];
 
     //draw
@@ -20,7 +22,7 @@ window.onload = function () {
 
         for (var i = 0; i < lwidth; i++) {
           let x = i;
-          let y = Math.sqrt(2 * Math.abs(x) * Math.abs(p) + 2 * x * p);
+          let y = Math.sqrt(Math.abs(4 * p * x));
           pointsPY.push({ x: x, y: y });
         }
 
@@ -44,7 +46,7 @@ window.onload = function () {
 
         for (var i = 0; i < lwidth; i++) {
           let x = i;
-          let y = -Math.sqrt(2 * Math.abs(x) * Math.abs(p) + 2 * x * p);
+          let y = -Math.sqrt(Math.abs(4 * p * x));
           pointsNY.push({ x: x, y: y });
         }
 
@@ -72,12 +74,14 @@ window.onload = function () {
         ctx.closePath();
 
         //좌표 기록
-        coords = [pointsPY, pointsNY];
+        coords = [pointsNY, pointsPY];
+        coords14 = [[].concat(...pointsNY), [].concat(...pointsPY)];
+        coords23 = [[], []];
       } else if (f / gridLineWidth < 0) {
         const pointsPY = [];
         for (var i = 0; i < lwidth; i++) {
           let x = i;
-          let y = Math.sqrt(2 * Math.abs(x) * Math.abs(p) - 2 * x * p);
+          let y = Math.sqrt(Math.abs(4 * p * x));
           pointsPY.push({ x: -x, y: y });
         }
 
@@ -99,7 +103,7 @@ window.onload = function () {
         const pointsNY = [];
         for (var i = 0; i < lwidth; i++) {
           let x = i;
-          let y = -Math.sqrt(2 * Math.abs(x) * Math.abs(p) - 2 * x * p);
+          let y = -Math.sqrt(Math.abs(4 * p * x));
           pointsNY.push({ x: -x, y: y });
         }
 
@@ -129,7 +133,9 @@ window.onload = function () {
         ctx.closePath();
 
         //좌표 기록
-        coords = [pointsPY, pointsNY];
+        coords23 = [[].concat(...pointsNY), [].concat(...pointsPY)];
+        coords14 = [[], []];
+        coords = [].concat(...pointsNY, ...pointsPY);
       }
 
       //준선
@@ -167,7 +173,9 @@ window.onload = function () {
       equationURL: equationURL,
       active: true,
       redraw: false,
-      coords: [].concat(...coords),
+      coords: coords,
+      coords14: coords14,
+      coords23: coords23,
     });
     console.log(graphs);
     listid++;
