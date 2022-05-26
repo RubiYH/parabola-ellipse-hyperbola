@@ -43,15 +43,18 @@ $(document).ready(function () {
       ctx.beginPath();
       ctx.setLineDash([]);
       ctx.moveTo(0, -b);
-      for (const point of points1) {
-        const xMid = (point.x + point.x) / 2;
-        const yMid = (point.y + point.y) / 2;
-        const cpX1 = (xMid + point.x) / 2;
-        const cpX2 = (xMid + point.x) / 2;
 
-        ctx.quadraticCurveTo(cpX1, point.y, xMid, yMid);
-        ctx.quadraticCurveTo(cpX2, point.y, point.x, point.y);
+      for (var i = 0; i < points1.length - 1; i++) {
+        var x_mid = (points1[i].x + points1[i + 1].x) / 2;
+        var cp_x2 = (x_mid + points1[i + 1].x) / 2;
+        ctx.quadraticCurveTo(
+          cp_x2,
+          points1[i + 1].y,
+          points1[i + 1].x,
+          points1[i + 1].y
+        );
       }
+
       ctx.strokeStyle = color;
       ctx.stroke();
       ctx.closePath();
@@ -77,15 +80,18 @@ $(document).ready(function () {
       ctx.beginPath();
       ctx.setLineDash([]);
       ctx.moveTo(0, -b);
-      for (const point of points2) {
-        const xMid = (point.x + point.x) / 2;
-        const yMid = (point.y + point.y) / 2;
-        const cpX1 = (xMid + point.x) / 2;
-        const cpX2 = (xMid + point.x) / 2;
 
-        ctx.quadraticCurveTo(cpX1, point.y, xMid, yMid);
-        ctx.quadraticCurveTo(cpX2, point.y, point.x, point.y);
+      for (var i = 0; i < points2.length - 1; i++) {
+        var x_mid = (points2[i].x + points2[i + 1].x) / 2;
+        var cp_x2 = (x_mid + points2[i + 1].x) / 2;
+        ctx.quadraticCurveTo(
+          cp_x2,
+          points2[i + 1].y,
+          points2[i + 1].x,
+          points2[i + 1].y
+        );
       }
+
       ctx.strokeStyle = color;
       ctx.stroke();
       ctx.closePath();
@@ -111,15 +117,18 @@ $(document).ready(function () {
       ctx.beginPath();
       ctx.setLineDash([]);
       ctx.moveTo(0, b);
-      for (const point of points3) {
-        const xMid = (point.x + point.x) / 2;
-        const yMid = (point.y + point.y) / 2;
-        const cpX1 = (xMid + point.x) / 2;
-        const cpX2 = (xMid + point.x) / 2;
 
-        ctx.quadraticCurveTo(cpX1, point.y, xMid, yMid);
-        ctx.quadraticCurveTo(cpX2, point.y, point.x, point.y);
+      for (var i = 0; i < points3.length - 1; i++) {
+        var x_mid = (points3[i].x + points3[i + 1].x) / 2;
+        var cp_x2 = (x_mid + points3[i + 1].x) / 2;
+        ctx.quadraticCurveTo(
+          cp_x2,
+          points3[i + 1].y,
+          points3[i + 1].x,
+          points3[i + 1].y
+        );
       }
+
       ctx.strokeStyle = color;
       ctx.stroke();
       ctx.closePath();
@@ -146,15 +155,18 @@ $(document).ready(function () {
       ctx.beginPath();
       ctx.setLineDash([]);
       ctx.moveTo(0, b);
-      for (const point of points4) {
-        const xMid = (point.x + point.x) / 2;
-        const yMid = (point.y + point.y) / 2;
-        const cpX1 = (xMid + point.x) / 2;
-        const cpX2 = (xMid + point.x) / 2;
 
-        ctx.quadraticCurveTo(cpX1, point.y, xMid, yMid);
-        ctx.quadraticCurveTo(cpX2, point.y, point.x, point.y);
+      for (var i = 0; i < points4.length - 1; i++) {
+        var x_mid = (points4[i].x + points4[i + 1].x) / 2;
+        var cp_x2 = (x_mid + points4[i + 1].x) / 2;
+        ctx.quadraticCurveTo(
+          cp_x2,
+          points4[i + 1].y,
+          points4[i + 1].x,
+          points4[i + 1].y
+        );
       }
+
       ctx.strokeStyle = color;
       ctx.stroke();
       ctx.closePath();
