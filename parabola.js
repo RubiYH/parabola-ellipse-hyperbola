@@ -17,7 +17,7 @@ window.onload = function () {
     //draw
     drawParabola = function (f, p, color) {
       if (f / gridLineWidth > 0) {
-        // y값 양수
+        // y값 음수
         const pointsPY = [];
 
         for (var i = 0; i < lwidth; i++) {
@@ -29,19 +29,23 @@ window.onload = function () {
         ctx.beginPath();
         ctx.setLineDash([]);
         ctx.moveTo(0, 0);
-        for (const point of pointsPY) {
-          const xMid = (point.x + point.x) / 2;
-          const yMid = (point.y + point.y) / 2;
-          const cpX1 = (xMid + point.x) / 2;
-          const cpX2 = (xMid + point.x) / 2;
-          ctx.quadraticCurveTo(cpX1, point.y, xMid, yMid);
-          ctx.quadraticCurveTo(cpX2, point.y, point.x, point.y);
+
+        for (var i = 0; i < pointsPY.length - 1; i++) {
+          var x_mid = (pointsPY[i].x + pointsPY[i + 1].x) / 2;
+          var cp_x2 = (x_mid + pointsPY[i + 1].x) / 2;
+          ctx.quadraticCurveTo(
+            cp_x2,
+            pointsPY[i + 1].y,
+            pointsPY[i + 1].x,
+            pointsPY[i + 1].y
+          );
         }
+
         ctx.strokeStyle = color;
         ctx.stroke();
         ctx.closePath();
 
-        //y값 음수
+        //y값 양수
         const pointsNY = [];
 
         for (var i = 0; i < lwidth; i++) {
@@ -53,14 +57,18 @@ window.onload = function () {
         ctx.beginPath();
         ctx.setLineDash([]);
         ctx.moveTo(0, 0);
-        for (const point of pointsNY) {
-          const xMid = (point.x + point.x) / 2;
-          const yMid = (point.y + point.y) / 2;
-          const cpX1 = (xMid + point.x) / 2;
-          const cpX2 = (xMid + point.x) / 2;
-          ctx.quadraticCurveTo(cpX1, point.y, xMid, yMid);
-          ctx.quadraticCurveTo(cpX2, point.y, point.x, point.y);
+
+        for (var i = 0; i < pointsNY.length - 1; i++) {
+          var x_mid = (pointsNY[i].x + pointsNY[i + 1].x) / 2;
+          var cp_x2 = (x_mid + pointsNY[i + 1].x) / 2;
+          ctx.quadraticCurveTo(
+            cp_x2,
+            pointsNY[i + 1].y,
+            pointsNY[i + 1].x,
+            pointsNY[i + 1].y
+          );
         }
+
         ctx.strokeStyle = color;
         ctx.stroke();
         ctx.closePath();
@@ -88,14 +96,18 @@ window.onload = function () {
         ctx.beginPath();
         ctx.setLineDash([]);
         ctx.moveTo(0, 0);
-        for (const point of pointsPY) {
-          const xMid = (point.x + point.x) / 2;
-          const yMid = (point.y + point.y) / 2;
-          const cpX1 = (xMid + point.x) / 2;
-          const cpX2 = (xMid + point.x) / 2;
-          ctx.quadraticCurveTo(cpX1, point.y, xMid, yMid);
-          ctx.quadraticCurveTo(cpX2, point.y, point.x, point.y);
+
+        for (var i = 0; i < pointsPY.length - 1; i++) {
+          var x_mid = (pointsPY[i].x + pointsPY[i + 1].x) / 2;
+          var cp_x2 = (x_mid + pointsPY[i + 1].x) / 2;
+          ctx.quadraticCurveTo(
+            cp_x2,
+            pointsPY[i + 1].y,
+            pointsPY[i + 1].x,
+            pointsPY[i + 1].y
+          );
         }
+
         ctx.strokeStyle = color;
         ctx.stroke();
         ctx.closePath();
@@ -110,14 +122,18 @@ window.onload = function () {
         ctx.beginPath();
         ctx.setLineDash([]);
         ctx.moveTo(0, 0);
-        for (const point of pointsNY) {
-          const xMid = (point.x + point.x) / 2;
-          const yMid = (point.y + point.y) / 2;
-          const cpX1 = (xMid + point.x) / 2;
-          const cpX2 = (xMid + point.x) / 2;
-          ctx.quadraticCurveTo(cpX1, point.y, xMid, yMid);
-          ctx.quadraticCurveTo(cpX2, point.y, point.x, point.y);
+
+        for (var i = 0; i < pointsNY.length - 1; i++) {
+          var x_mid = (pointsNY[i].x + pointsNY[i + 1].x) / 2;
+          var cp_x2 = (x_mid + pointsNY[i + 1].x) / 2;
+          ctx.quadraticCurveTo(
+            cp_x2,
+            pointsNY[i + 1].y,
+            pointsNY[i + 1].x,
+            pointsNY[i + 1].y
+          );
         }
+
         ctx.strokeStyle = color;
         ctx.stroke();
         ctx.closePath();
