@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html>
+  <header>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+      crossorigin="anonymous"
+    ></script>
+    <title>이차곡선 그리기</title>
+  </header>
+  <body>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+      integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <script src="https://unpkg.com/@panzoom/panzoom@4.4.4/dist/panzoom.min.js"></script>
+    <script
+      type="text/javascript"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/gh/prashantchaudhary/ddslick@master/jquery.ddslick.min.js"></script>
+    <script>
+      let width;
+      let height;
+      let center;
+      let hcenter;
+      let lwidth;
+      let lheight;
+      let gridLineWidth;
+      let gridThickness;
+      let graphs = [];
+      let c;
+      let ctx;
+      let scale;
+      let lineWidth;
+      let fontSize;
+      let listid = 0;
+      let formatEquation;
+      let drawParabola;
+      let drawEllipse;
+      let drawHyperbolaX;
+      let drawHyperbolaY;
+
+      $(document).ready(function () {
+        width = $(".bg").width() * 3;
+        height = $(".bg").height() * 2.5;
+        center = (width * 4) / 2;
+        hcenter = (height * 4) / 2;
+        lwidth = width * 4; //너비
+        lheight = height * 4; //높이
+        gridLineWidth = 100; //좌표평면 간격
+        gridThickness = 3; //좌표평면 굵기
+
+        graphs = [];
+
+        c = document.getElementById("canvas");
+        ctx = c.getContext("2d");
+
+        c.width = width * 4;
+        c.height = height * 4;
+
+        scale = 0.3; //초기 크기
+
+        lineWidth = 12;
+        fontSize = 70;
+
+        //초기 스크롤 위치 설정
+        $(".bg").scrollLeft($(".bg").width() * 5.5);
+        $(".bg").scrollTop($(".bg").height() * 4.5);
+
+        // Center
+        ctx.translate(center, hcenter);
+        ctx.scale(scale, scale);
+        ctx.fillStyle = "rgb(0,0,0)";
+
+        //pan & zoom
+        const panzoom = Panzoom(c, {
+          maxScale: 3.5,
+          minScale: 0.3,
+          step: 0.3,
+          roundPixels: true,
+          origin: "100% 100%",
+        });
+
+        c.parentElement.addEventListener("wheel", function (e) {
+          panzoom.zoomWithWheel(e);
+        });
+
+        //초기화
+        $("#reset").click(function () {
+          c.width = width * 4;
+          c.height = height * 4;
+          ctx.translate(center, hcenter);
+          ctx.scale(scale, scale);
+          ctx.fillStyle = "rgb(0,0,0)";
+          drawGrid();
+          $(".list").empty();
+          for (var i = 0; i < graphs.length; i++) {
+            graphs[i].active = false;
+            if (graphs[i].redraw) {
+              graphs[i].redraw = false;
+            }
+          }
+        });
+
+        //x축, y축
+        function drawGrid() {
+          let gridColor = "rgb(211,211,211)";
+
+          for (var i = 0; i < lwidth; i += gridLineWidth) {
+            ctx.beginPath();
+            ctx.lineWidth = gridThickness;
+            ctx.strokeStyle = gridColor;
+            ctx.moveTo(-i, 0);
+            ctx.lineTo(-i, lheight);
+            ctx.stroke();
+            ctx.lineTo(-i, -lheight);
+            ctx.stroke();
+            ctx.closePath();
+          }
+
+          for (var i = 0; i < lwidth; i += gridLineWidth) {
+            ctx.beginPath();
+            ctx.lineWidth = gridThickness;
+            ctx.strokeStyle = gridColor;
+            ctx.moveTo(i, 0);
+            ctx.lineTo(i, lheight);
+            ctx.stroke();
+            ctx.lineTo(i, -lheight);
+            ctx.stroke();
+            ctx.closePath();
+          }
+
+          for (var i = 0; i < lheight; i += gridLineWidth) {
+            ctx.beginPath();
+            ctx.lineWidth = gridThickness;
+            ctx.strokeStyle = gridColor;
+            ctx.moveTo(0, i);
+            ctx.lineTo(lwidth, i);
+            ctx.stroke();
+            ctx.lineTo(-lwidth, i);
+            ctx.stroke();
+            ctx.closePath();
+          }
+
+          for (var i = 0; i < lheight; i += gridLineWidth) {
+            ctx.beginPath();
+            ctx.lineWidth = gridThickness;
+            ctx.strokeStyle = gridColor;
+            ctx.moveTo(0, -i);
+            ctx.lineTo(lwidth, -i);
+            ctx.stroke();
+            ctx.lineTo(-lwidth, -i);
+            ctx.stroke();
+            ctx.closePath();
+          }
+
+          ctx.strokeStyle = "rgb(0,0,0)";
+          ctx.beginPath();
+          ctx.lineWidth = 10;
+          ctx.moveTo(-lwidth, 0);
+          ctx.lineTo(lwidth, 0);
+          ctx.stroke();
+          ctx.moveTo(0, -lheight);
+          ctx.lineTo(0, lheight);
+          ctx.stroke();
+          ctx.closePath();
+
+          ctx.font = `${fontSize}px Arial`;
+          ctx.fillText("x축", width - 80, -10);
+          ctx.fillText("y축", 10, -height + 60);
+          ctx.fillText("O", -60, 60);
+        }
+
+        drawGrid();
+
+        //sections
+        $(".h1-parabola").click(function () {
+          $(".parabola").css({ display: "flex" });
+          $(".ellipse").css({ display: "none" });
+          $(".hyperbola").css({ display: "none" });
+        });
+
+        $(".h1-ellipse").click(function () {
+          $(".ellipse").css({ display: "flex" });
+          $(".parabola").css({ display: "none" });
+          $(".hyperbola").css({ display: "none" });
+        });
+
+        $(".h1-hyperbola").click(function () {
+          $(".hyperbola").css({ display: "flex" });
+          $(".ellipse").css({ display: "none" });
+          $(".parabola").css({ display: "none" });
+        });
+      });
+
+      //random rgb
+      function random_rgb() {
+        var o = Math.round,
+          r = Math.random,
+          s = 255;
+        return "rgb(" + o(r() * s) + "," + o(r() * s) + "," + o(r() * s) + ")";
+      }
+
+      function reduce(number, denomin) {
+        var gcd = function gcd(a, b) {
+          return b ? gcd(b, a % b) : a;
+        };
+        gcd = gcd(number, denomin);
+        return [number / gcd, denomin / gcd];
+      }
+
+      formatEquation = (a, b, equation) => {
+        let eq = equation;
+        if (a == 1 * gridLineWidth) {
+          eq = eq.replace("\\frac{x^{2}}{a_2}", "{x^{2}}");
+          console.log("a");
+        }
+
+        if (b == 1 * gridLineWidth) {
+          eq = eq.replace("\\frac{y^{2}}{b_2}", "{y^{2}}");
+          console.log("b");
+        }
+
+        return eq
+          .replace("{a_2}", `{${(a / gridLineWidth) ** 2}}`)
+          .replace("{b_2}", `{${(b / gridLineWidth) ** 2}}`);
+      };
+
+      function fullscreen(e) {
+        $(`#${e}`).attr("class", "fa-solid fa-compress");
+        $(".toolbox-prt").css({
+          display: "flex",
+          top: 0,
+          position: "fixed",
+          "z-index": "999",
+        });
+        $("#toolbox").css({
+          width: "98%",
+          "z-index": 999,
+        });
+        $(".boundary").css({
+          position: "absolute",
+          left: 0,
+          top: 0,
+          width: "100%",
+          height: "100%",
+          margin: 0,
+        });
+        $("html").css({
+          overflow: "hidden",
+        });
+      }
+
+      function exitscreen(e) {
+        $(`#${e}`).attr("class", "fa-solid fa-expand");
+        $(".boundary").removeAttr("style");
+        $("html").removeAttr("style");
+        $("#toolbox").removeAttr("style");
+        $(".toolbox-prt").removeAttr("style");
+      }
+
+      function toggleFullscreen(e) {
+        let elem = document.documentElement;
+
+        if (
+          !document.fullscreenElement &&
+          !document.mozFullScreenElement &&
+          !document.webkitFullscreenElement &&
+          !document.msFullscreenElement
+        ) {
+          if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+            fullscreen(e);
+          } else if (elem.msRequestFullscreen) {
+            elem.msRequestFullscreen();
+            fullscreen(e);
+          } else if (elem.mozRequestFullScreen) {
+            elem.mozRequestFullScreen();
+            fullscreen(e);
+          } else if (elem.webkitRequestFullscreen) {
+            elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+            fullscreen(e);
+          }
+        } else {
+          if (document.exitFullscreen) {
+            document.exitFullscreen();
+          } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+          } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+          } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+          }
+        }
+      }
+
+      //detect exiting fullscreen
+      var el = document.documentElement;
+
+      el.addEventListener("fullscreenchange", function () {
+        if (!document.fullscreenElement) {
+          exitscreen("fs");
+        }
+      });
+    </script>
+    <script src="parabola.js"></script>
+    <script src="hover.js"></script>
+    <script src="ellipse.js"></script>
+    <script src="hyperbola.js"></script>
+    <script src="common.js"></script>
+    <div class="wrapper">
+      <div class="nav">
+        <h1 class="h1-parabola">포물선</h1>
+        <h1 class="h1-ellipse">타원</h1>
+        <h1 class="h1-hyperbola">쌍곡선</h1>
+      </div>
+      <!-- 포물선 -->
+      <div
+        class="parabola"
+        style="
+          display: flex;
+          flex-direction: row;
+          flex-wrap: nowrap;
+          align-items: center;
+          justify-content: center;
+        "
+      >
+        <span>
+          y² = 4
+          <input id="p-F" type="number" placeholder="p" />
+          x
+        </span>
+        <button id="p-draw" style="margin: 1rem">그리기</button>
+      </div>
+
+      <!-- 타원 -->
+      <div
+        class="ellipse"
+        style="display: none; flex-direction: row; align-items: center"
+      >
+        <div style="display: flex; flex-direction: column">
+          <span
+            style="
+              border-bottom: 2px solid black;
+              margin: 0 auto;
+              line-height: 2;
+            "
+          >
+            x²
+          </span>
+          <span style="word-spacing: -1rem">
+            <input
+              id="ea"
+              style="width: 3rem; height: 2rem"
+              type="number"
+              placeholder="a"
+            />
+            <span>²</span>
+          </span>
+        </div>
+        <span>+</span>
+        <div style="display: flex; flex-direction: column">
+          <span
+            style="
+              border-bottom: 2px solid black;
+              margin: 0 auto;
+              line-height: 2;
+            "
+          >
+            y²
+          </span>
+          <span style="word-spacing: -1rem">
+            <input
+              id="eb"
+              style="width: 3rem; height: 2rem"
+              type="number"
+              placeholder="b"
+            />
+            <span>²</span>
+          </span>
+        </div>
+        <span style="height: 2rem; margin-right: 1rem; margin-left: 1rem">
+          = 1
+        </span>
+        <button id="e-draw">그리기</button>
+      </div>
+      <!-- 쌍곡선 -->
+      <div
+        class="hyperbola"
+        style="
+          display: none;
+          flex-direction: row;
+          align-items: center;
+          width: 100%;
+          justify-content: center;
+        "
+      >
+        <select id="sel-hyper"></select>
+        <script>
+          var ddData = [
+            {
+              value: "x",
+              imageSrc: "x.png",
+            },
+            {
+              value: "y",
+              imageSrc: "y.png",
+            },
+          ];
+          $("#sel-hyper").ddslick({
+            data: ddData,
+            width: 100,
+            defaultSelectedIndex: 0,
+            imagePosition: "center",
+            onSelected: function (data) {
+              //console.log(data.selectedData.value);
+              var data = data.selectedData.value;
+              if (data == "x") {
+                $("#hyperx-wrapper").css({ display: "flex" });
+                $("#hypery-wrapper").css({ display: "none" });
+              } else if (data == "y") {
+                $("#hyperx-wrapper").css({ display: "none" });
+                $("#hypery-wrapper").css({ display: "flex" });
+              }
+            },
+          });
+        </script>
+        <!-- 가로 -->
+        <div
+          id="hyperx-wrapper"
+          style="
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            margin-left: 2rem;
+          "
+        >
+          <div style="display: flex; flex-direction: column">
+            <span
+              style="
+                border-bottom: 2px solid black;
+                margin: 0 auto;
+                line-height: 2;
+              "
+            >
+              x²
+            </span>
+            <span style="word-spacing: -1rem">
+              <input
+                id="ha-x"
+                style="width: 3rem; height: 2rem"
+                type="number"
+                placeholder="a"
+              />
+              <span>²</span>
+            </span>
+          </div>
+          <span>-</span>
+          <div style="display: flex; flex-direction: column">
+            <span
+              style="
+                border-bottom: 2px solid black;
+                margin: 0 auto;
+                line-height: 2;
+              "
+            >
+              y²
+            </span>
+            <span style="word-spacing: -1rem">
+              <input
+                id="hb-x"
+                style="width: 3rem; height: 2rem"
+                type="number"
+                placeholder="b"
+              />
+              <span>²</span>
+            </span>
+          </div>
+          <span style="height: 2rem; margin-right: 1rem; margin-left: 1rem">
+            = 1
+          </span>
+          <p style="margin-right: 1rem">
+            <input type="checkbox" id="x-asym" />
+            <label for="x-asym">점근선 표시</label>
+          </p>
+          <button id="h-draw-x">그리기</button>
+        </div>
+        <!-- 세로 -->
+        <div
+          id="hypery-wrapper"
+          style="
+            display: none;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            margin-left: 2rem;
+          "
+        >
+          <div style="display: flex; flex-direction: column">
+            <span
+              style="
+                border-bottom: 2px solid black;
+                margin: 0 auto;
+                line-height: 2;
+              "
+            >
+              x²
+            </span>
+            <span style="word-spacing: -1rem">
+              <input
+                id="ha-y"
+                style="width: 3rem; height: 2rem"
+                type="number"
+                placeholder="a"
+              />
+              <span>²</span>
+            </span>
+          </div>
+          <span>-</span>
+          <div style="display: flex; flex-direction: column">
+            <span
+              style="
+                border-bottom: 2px solid black;
+                margin: 0 auto;
+                line-height: 2;
+              "
+            >
+              y²
+            </span>
+            <span style="word-spacing: -1rem">
+              <input
+                id="hb-y"
+                style="width: 3rem; height: 2rem"
+                type="number"
+                placeholder="b"
+              />
+              <span>²</span>
+            </span>
+          </div>
+          <span style="height: 2rem; margin-right: 1rem; margin-left: 1rem">
+            = -1
+          </span>
+          <p style="margin-right: 1rem">
+            <input type="checkbox" id="y-asym" />
+            <label for="y-asym">점근선 표시</label>
+          </p>
+          <button id="h-draw-y">그리기</button>
+        </div>
+      </div>
+      <!-- 캔버스 -->
+      <div class="boundary">
+        <div class="toolbox-prt">
+          <div id="toolbox">
+            <div id="tools">
+              <button id="graphs_list">그래프 기록</button>
+              <div class="history">
+                <div class="hlist"></div>
+              </div>
+              <button id="reset">초기화</button>
+              <button id="coord_list_btn">좌표 기록</button>
+            </div>
+            <i class="fa-solid fa-expand" id="fs" title="전체 화면"></i>
+          </div>
+        </div>
+        <div class="coord_list"></div>
+        <div class="bg">
+          <div class="list"></div>
+          <div class="coord"></div>
+          <canvas id="canvas"></canvas>
+        </div>
+      </div>
+    </div>
+  </body>
+  <footer style="text-align: center; font-size: 0.5rem">Made By 윤호</footer>
+</html>
